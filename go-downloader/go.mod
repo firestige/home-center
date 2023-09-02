@@ -1,3 +1,3 @@
-module firestige.com/go-downloader
+module firestige.xyz/go-downloader
 
 go 1.20

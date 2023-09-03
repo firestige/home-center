@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestDownload(f *testing.T) {
@@ -47,5 +48,26 @@ func TestWritePieces(t *testing.T) {
 		fmt.Println("file: '" + destinationPath + "' open failed")
 	}
 
-	dest.WriteAt()
+	piecesLen := 10
+	pieceSize := size / int64(piecesLen)
+	if pieceSize*10 < size {
+		piecesLen += 1
+	}
+
+	for i := 0; i < piecesLen; i++ {
+		go func(vs int) {
+			ps := pieceSize
+			if i == 10 {
+				ps = size - 10*pieceSize
+			}
+			b := make([]byte, ps)
+			source.ReadAt(b, int64(vs)*ps)
+			dest.WriteAt(b, int64(vs)*ps)
+		}(i)
+	}
+
+	time.Sleep(time.Second * 5)
+
+	defer dest.Close()
+	defer source.Close()
 }

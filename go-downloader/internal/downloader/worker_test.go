@@ -71,3 +71,58 @@ func TestWritePieces(t *testing.T) {
 	defer dest.Close()
 	defer source.Close()
 }
+
+func TestPause(t *testing.T) {
+
+}
+
+func download(url string) {
+	//    确认是否支持
+}
+
+func isSupportRange(url string) int {
+	req, err := http.NewRequest("HEAD", "", nil)
+	if err != nil {
+		return -1
+	}
+	req.Header.Set("Range", "0-")
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		return -1
+	}
+	// 判断报文头是否支持范围请求，如果支持返回报文长度，不支持返回-1
+	resp.Header.Get("Content-Length")
+	return 0
+}
+
+func doPieces(url string, n int) error {
+	b, err := request(url, 0, 0)
+	if err != nil {
+		return err
+	}
+	err = writeFile(b, "", 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func request(url string, offset int64, size int64) (body []byte, err error) {
+	req, _ := http.NewRequest("GET", "", nil)
+	req.Header.Set("Range", "0-")
+	resp, _ := (&http.Client{}).Do(req)
+}
+
+func writeFile(content []byte, filePath string, offset int64) error {
+	dest, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("")
+		return err
+	}
+	_, err = dest.WriteAt(content, offset)
+	if err != nil {
+		fmt.Println("")
+		return err
+	}
+	return nil
+}
